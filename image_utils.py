@@ -2,6 +2,7 @@ from PIL import Image, ImageEnhance
 import matplotlib.pyplot as plt
 import os
 import numpy as np
+import pathlib
 
 from PIL import ImageFile
 
@@ -49,13 +50,21 @@ def create_dir_if_not_exists(path):
     os.makedirs(path)
 
 
-def get_all_files(path, get_full_path=False):
+# def get_all_files(path, search ,get_full_path=False):
+#     if get_full_path:
+#         onlyfiles = [path + '/' + f for f in os.listdir(
+#             path) if os.path.isfile(os.path.join(path, f))]
+#     else:
+#         onlyfiles = [f for f in os.listdir(
+#             path) if os.path.isfile(os.path.join(path, f))]
+#     return onlyfiles
+
+def get_all_files(path, pattern='*', get_full_path=False):
+    files = list(pathlib.Path(path).glob(pattern))
     if get_full_path:
-        onlyfiles = [path + '/' + f for f in os.listdir(
-            path) if os.path.isfile(os.path.join(path, f))]
+        onlyfiles = [os.path.join(path, f.name) for f in files if f.is_file()]
     else:
-        onlyfiles = [f for f in os.listdir(
-            path) if os.path.isfile(os.path.join(path, f))]
+        onlyfiles = [f.name for f in files if f.is_file()]
     return onlyfiles
 
 
@@ -114,3 +123,22 @@ def set_image_contrast(image, factor):
     # image brightness enhancer
     enhancer = ImageEnhance.Contrast(image)
     return enhancer.enhance(factor)
+
+def rotate_image(image, angle):
+    angle = 360 - angle
+    image = image.rotate(angle)
+
+# def calc_new_bbox(bbox, angle):
+    
+# def read_bbox_from_xml(filename):
+
+def plot_rect(image, rect, box_color):
+    x, y, w, h = rect
+    r, g, b = box_color
+    np_image = np.asarray(image)
+    # get the row to mark.
+    np_image[y, x: x + w] = [r, g, b]
+    # np_image[y : y + y, x] = [r, g, b]
+    return Image.fromarray(np_image)
+    # np_image[x : x+ h, ]
+    
